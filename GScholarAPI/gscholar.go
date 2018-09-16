@@ -25,9 +25,7 @@ func extractProfileLinkDetails(goQuerydocument *goquery.Document) string {
 		Links = append(Links, Link)
 		gscholarProfileLink = strings.Join(Links, "")
 	})
-
 	return gscholarProfileLink
-
 }
 
 func extractFullName(goQuerydocument *goquery.Document) string{

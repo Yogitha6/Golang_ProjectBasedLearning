@@ -28,9 +28,21 @@ func HomePagePOSTHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.Method)
 
 	fullName := r.FormValue("fullName")
-	fmt.Printf("Searching for name %s on google scholar\n", fullName)
 
-	scholarDetails := getGoogleScholarDetails(fullName)
+	//First search in local database
+	db := openConnectiontoDB()
+	defer db.Close()
+
+	scholarDetails := readfromDB(db, fullName)
+
+	//If the information is stale or not available try scraping the google scholar web page
+	if scholarDetails.FullName == "" {
+		fmt.Printf("Searching for name %s on google scholar\n", fullName)
+		scholarDetails = getGoogleScholarDetails(fullName)
+		//Write the fetched details to local DB
+		insertRowintoDB(db, scholarDetails)
+	}
+
 	fmt.Println("Found these details: ")
 	fmt.Println(scholarDetails)
 
@@ -42,6 +54,21 @@ func HomePagePOSTHandler(w http.ResponseWriter, r *http.Request) {
 
 func APIHandler(w http.ResponseWriter, r * http.Request) {
 	requestVars := mux.Vars(r)
-	scholarDetails := getGoogleScholarDetails(requestVars["name"])
+	fullName := requestVars["name"]
+
+	//First search in local database
+	db := openConnectiontoDB()
+	defer db.Close()
+
+	scholarDetails := readfromDB(db, fullName)
+
+	//If the information is stale or not available try scraping the google scholar web page
+	if scholarDetails.FullName == "" {
+		fmt.Printf("Searching for name %s on google scholar\n", fullName)
+		scholarDetails = getGoogleScholarDetails(fullName)
+		//Write the fetched details to local DB
+		insertRowintoDB(db, scholarDetails)
+	}
+
 	json.NewEncoder(w).Encode(scholarDetails)
 }
