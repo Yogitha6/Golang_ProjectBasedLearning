@@ -5,6 +5,7 @@ This repository contains simple projects to learn GoLang post to learning the ba
 
 https://golangbot.com/ - Naveen provides a great explaination of variety of concepts in GoLang along with many examples.
 https://www.udemy.com/learn-how-to-code/ - Todd McLeod's 21 hour video course is also worth spending some time to understand the language better.
+
 The Go Programming Language course by John Sonmez on Pluralsight is also a good starting point for absolute beginners to understand the history, advantages and basic concepts of Go.
 
 Other useful websites one should consider giving a visit:
