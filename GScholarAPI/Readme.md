@@ -1,4 +1,4 @@
-#Google Scholar API
+# Google Scholar API
 To learn golang website creation by creating a website & REST API end point for Google scholar website.
 
 Current functionality implemented:
