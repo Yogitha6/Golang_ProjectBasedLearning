@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
-func checkforWin(board [][]int) bool {
-
+func checkforWin(board [][]int) (bool, bool) {
+	counter := 0
+	gameOver := false
 	for i, row := range board {
 		rowplayer1, rowplayer2 := 0, 0
 		colplayer1, colplayer2 := 0, 0
@@ -18,8 +19,10 @@ func checkforWin(board [][]int) bool {
 			//checking rows
 			if cell == 1 {
 				rowplayer1 = rowplayer1 + 1
+				counter = counter + 1
 			} else if cell == 2 {
 				rowplayer2 = rowplayer2 + 1
+				counter = counter + 1
 			}
 
 			//check columns
@@ -29,8 +32,14 @@ func checkforWin(board [][]int) bool {
 				colplayer2 = colplayer2 + 1
 			}
 		}
+
+		if counter == 9 {
+			gameOver = true
+		}
+
 		if rowplayer1 == 3 || rowplayer2 == 3 || colplayer1 == 3 || colplayer2 == 3 {
-			return true
+
+			return true, gameOver
 		}
 	}
 
@@ -53,18 +62,18 @@ func checkforWin(board [][]int) bool {
 	}
 
 	if dg1p1 == 3 || dg1p2 == 3 || dg2p1 == 3 || dg2p2 == 3 {
-		return true
+		return true, gameOver
 	}
 
-	return false
+	return false, gameOver
 }
 
 func takeInputfromUser(player int) (int, int) {
 	fmt.Printf("Player %d's turn ", player)
-	
+
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
-	
+
 	if scanner.Err() != nil {
 		fmt.Println("Invalid Input, Game Over")
 	}
@@ -73,23 +82,31 @@ func takeInputfromUser(player int) (int, int) {
 
 	x, _ := strconv.Atoi(slc[0])
 	y, _ := strconv.Atoi(slc[1])
-	
+
 	return x, y
 }
 
-func initializeBoard(size int) [][]int{
+func initializeBoard(size int) [][]int {
 	board := make([][]int, size)
-	
-	for i:=0; i<size; i++ {
+
+	for i := 0; i < size; i++ {
 		board[i] = make([]int, size)
 	}
-	
+
 	return board
 }
 
-func updateBoard(board [][]int, x, y, player int) bool {
+func updateBoard(board [][]int, x, y, player int) (bool, bool) {
 	board[x][y] = player
-	return checkforWin(board)
+	win, over := checkforWin(board)
+	return win, over
+}
+
+func boardslotoccupied(board [][]int, x, y int) bool {
+	if board[x][y] != 0 {
+		return true
+	}
+	return false
 }
 
 func main() {
@@ -98,19 +115,32 @@ func main() {
 	fmt.Println("Please input the position number of your move as coordinates X Y")
 	player := 1
 	for {
-	x, y := takeInputfromUser(player)
-	won := updateBoard(board, x, y, player)
-	fmt.Println(board)
-
-	if won == true {
-		fmt.Printf("Game over, %d player won the game", player)
-		break;
-	} else {
-		if player == 1 {
-			player = 2
-		} else {
-			player = 1
+		x, y := takeInputfromUser(player)
+		if x > 2 || y > 2 || x < 0 || y < 0 {
+			fmt.Println("Value out of range")
+			continue
 		}
-	}
+		if boardslotoccupied(board, x, y) {
+			fmt.Println("Can't override")
+			continue
+		}
+		won, over := updateBoard(board, x, y, player)
+		for _, row := range board {
+			fmt.Println(row)
+		}
+
+		if won == true {
+			fmt.Printf("Game over, %d player won the game", player)
+			break
+		} else if over == true {
+			fmt.Println("Game Over, Tie!!")
+			break
+		} else {
+			if player == 1 {
+				player = 2
+			} else {
+				player = 1
+			}
+		}
 	}
 }

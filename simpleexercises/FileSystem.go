@@ -42,6 +42,9 @@ func (currdir *node) showPWD() {
 }
 
 func (currdir *node) add(name string, dtype string) {
+	if currdir.dtype == "file" {
+		fmt.Println("Can't add an object to a file")
+	}
 	nodeobj := node{name: name, dtype: dtype, children: []*node{}, parent: currdir}
 	currdir.children = append(currdir.children, &nodeobj)
 }
